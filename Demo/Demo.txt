@@ -1,0 +1,136 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include<iostream>
+using namespace std;
+//队列中的迷宫问题
+#include<stack>
+#include<assert.h>
+#define N 10
+
+
+struct Pos
+{
+	int _row;
+	int _col;
+
+	Pos(int row,int col)
+		:_row(row)
+		, _col(col)
+	{}
+};
+
+template<class T>
+bool SearchMazePath(int* a, int n, Pos entry, stack<T>& paths)
+{
+	assert(a);
+	
+	paths.push(entry);
+	while (!paths.empty())
+	{
+		Pos cur = paths.top();
+		a[cur._row*n + cur._col] = 2;			
+		if (cur._row == n - 1)
+		{
+			return true;
+		}
+
+		//右
+		Pos tmp = cur;
+		++tmp._col;
+		if (a[tmp._row*n + tmp._col] == 0)
+		{
+			paths.push(tmp);
+			continue;
+		}
+
+		//上
+		tmp = cur;
+		--tmp._row;
+		if (a[tmp._row*n + tmp._col] == 0)
+		{
+			paths.push(tmp);
+			continue;
+		}
+		
+		//下
+		tmp = cur;	
+		++tmp._row;
+		if (a[tmp._row*n + tmp._col] == 0)
+		{
+			paths.push(tmp);
+			continue;
+		}
+		
+		//左
+		tmp = cur;		
+		--tmp._col;
+		if (a[tmp._row*n + tmp._col] == 0)
+		{
+			paths.push(tmp);
+			continue;
+		}
+		
+		paths.pop();
+	}
+	return false;
+}
+
+
+//读取到迷宫图案
+void GetMaze(int* a, int n)
+{
+	assert(a);
+	FILE* fout = fopen("MazeMap.txt", "r");
+	assert(fout);
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			while (true)
+			{
+				int men = fgetc(fout);//读取字符
+				if (men == '0' || men == '1')
+				{
+					a[i*n + j] = men -'0';
+					break;
+				}				
+			}
+		}
+	}	
+	
+}
+
+void PrintMaze(int* a, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n;j++ )
+		{
+			cout << a[i*n + j] << "  ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
+
+void Test()
+{
+	
+
+	int a[N][N] = {};
+	Pos sp(2, 0);
+	GetMaze((int*) a, N);
+	PrintMaze((int*)a, N);
+	stack<Pos> paths;
+	SearchMazePath((int*)a, N, sp, paths);
+	PrintMaze((int*)a, N);
+
+}
+
+int main()
+{
+	Test();
+	system("pause");
+	return 0;
+}
